@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RegalArte | Gift Studio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent: #bfff00;
+            --bg: #0a0a0a;
+            --card-bg: #151515;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- ESTADOS INICIALES (OCULTOS) --- */
+        nav, .shop-container, footer {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 1.2s ease;
+            pointer-events: none;
+        }
+
+        .reveal-ui {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            pointer-events: all !important;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 50px;
+            display: flex; justify-content: space-between;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+        }
+
+        .nav-links a {
+            color: white; text-decoration: none;
+            font-size: 11px; text-transform: uppercase;
+            letter-spacing: 2px; margin-left: 25px;
+            opacity: 0.6; transition: 0.3s;
+        }
+
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        .bg-img {
+            position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2000') no-repeat center/cover;
+            filter: grayscale(100%) brightness(0.5);
+            z-index: 1;
+            animation: kenBurns 20s infinite alternate;
+        }
+
+        @keyframes kenBurns {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        .blur-effect {
+            position: absolute; inset: 0;
+            backdrop-filter: blur(20px);
+            -webkit-mask-image: linear-gradient(to right, black 10%, transparent 60%);
+            mask-image: linear-gradient(to right, black 10%, transparent 60%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative; z-index: 10; text-align: center;
+            width: 90%;
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 9vw, 6.5rem); 
+            font-weight: 500;
+            letter-spacing: -0.03em; 
+            line-height: 0.9;
+        }
+
+        .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .char.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-title .dot { 
+            color: var(--accent); 
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        
+        .main-title .dot.reveal { opacity: 1; }
+
+        .hero-tagline {
+            letter-spacing: 8px; 
+            opacity: 0; 
+            margin-top: 15px; 
+            text-transform: uppercase; 
+            font-size: clamp(10px, 1.5vw, 12px);
+            transition: opacity 1s ease;
+        }
+
+        .hero-tagline.reveal { opacity: 0.5; }
+
+        /* --- SHOP SECTION --- */
+        .shop-container {
+            padding: 100px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+            display: flex; align-items: flex-end; justify-content: space-between;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 5vw, 3rem); font-weight: 400; letter-spacing: -2px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .product-card {
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover { transform: translateY(-10px); }
+
+        .image-holder {
+            width: 100%; aspect-ratio: 4/5;
+            background-color: var(--card-bg);
+            margin-bottom: 20px; overflow: hidden;
+        }
+
+        .image-holder img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%); transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .product-card:hover img {
+            filter: grayscale(0%); transform: scale(1.08);
+        }
+
+        .product-info { display: flex; justify-content: space-between; align-items: baseline; }
+        .product-name { font-size: 16px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+        .product-price { opacity: 0.5; font-size: 13px; }
+
+        .add-btn {
+            margin-top: 10px; display: inline-block; font-size: 9px;
+            color: var(--accent); text-transform: uppercase;
+            letter-spacing: 2px; border-bottom: 1px solid var(--accent);
+            padding-bottom: 2px;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: 0.4s ease; backdrop-filter: blur(15px);
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: #0f0f0f; padding: 60px 40px; max-width: 450px; width: 90%;
+            text-align: center; border: 1px solid #222; position: relative;
+            transform: translateY(20px); transition: 0.5s ease;
+        }
+
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+
+        .modal-content h3 { font-size: 28px; font-weight: 400; letter-spacing: -1px; margin-bottom: 10px; }
+        .modal-content p { opacity: 0.5; font-size: 12px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; }
+
+        .btn-wa {
+            display: block; background: var(--accent); color: black;
+            padding: 20px; text-decoration: none; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 2px; font-size: 11px;
+            transition: 0.3s;
+        }
+
+        .btn-wa:hover { letter-spacing: 4px; background: white; }
+
+        .close-modal {
+            position: absolute; top: 25px; right: 25px;
+            cursor: pointer; opacity: 0.3; font-size: 10px; letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .close-modal:hover { opacity: 1; }
+
+        footer {
+            padding: 80px 20px; border-top: 1px solid #222; text-align: center;
+            font-size: 10px; opacity: 0.4; letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 20px; }
+            .shop-container { padding: 60px 20px; }
+        }
+
+        /* --- ABOUT & LOCATION STYLES --- */
+        .about-section {
+            padding: 150px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+            border-top: 1px solid #222;
+        }
+
+        .about-label {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 10px;
+            margin-bottom: 20px;
+        }
+
+        .about-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 400;
+            line-height: 1.2;
+            max-width: 900px;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+        }
+
+        .about-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 60px;
+        }
+
+        .detail-column span {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            opacity: 0.4;
+        }
+
+        .detail-column p {
+            font-size: 14px;
+            opacity: 0.7;
+            max-width: 300px;
+        }
+
+        /* LOCATION SECT */
+        .location-section {
+            border-top: 1px solid #222;
+            background: #0f0f0f;
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+
+        .location-info {
+            padding: 80px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .location-info h3 {
+            font-size: 40px;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .address, .hours {
+            font-size: 14px;
+            opacity: 0.6;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .map-container {
+            filter: grayscale(1) invert(0.92) contrast(1.2); /* EL TRUCO PARA EL MAPA DARK */
+            opacity: 0.7;
+            transition: 0.5s;
+        }
+
+        .map-container:hover {
+            opacity: 1;
+            filter: grayscale(0.5) invert(0.92);
+        }
+
+        @media (max-width: 768px) {
+            .location-grid { grid-template-columns: 1fr; }
+            .map-container { height: 300px; }
+            .about-section { padding: 80px 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav id="nav-ui">
+        <div style="font-weight: 600; letter-spacing: 3px;">RegalArte.</div>
+        <div class="nav-links">
+            <a href="#shop">Collection</a>
+            <a href="#">Blog</a>
+            <a href="#">Cart (0)</a>
+        </div>
+    </nav>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">CLOSE</span>
+            <h3 id="modal-title">Objeto Seleccionado</h3>
+            <p>¿Te interesa estel producto para regalar?</p>
+            <a href="#" id="wa-link" target="_blank" class="btn-wa">Consultar por WhatsApp</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="bg-img"></div>
+        <div class="blur-effect"></div>
+        <div class="hero-content">
+            <h1 class="main-title" id="animated-title">RegalArte</h1>
+            <p class="hero-tagline" id="animated-tagline">Elegir también es regalar</p>
+        </div>
+    </section>
+
+    <main class="shop-container" id="shop-ui">
+        <div class="section-header">
+            <h2>Destacados</h2>
+            <p style="opacity: 0.4; font-size: 11px;">( 04 OBJECTS )</p>
+        </div>
+
+        <div class="product-grid">
+            <div class="product-card" onclick="openModal('Producto A', '$45.00')">
+                <div class="image-holder"><img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800"></div>
+                <div class="product-info"><span class="product-name">Producto A</span><span class="product-price">$45.00</span></div>
+                <span class="add-btn">View Detail</span>
+            </div>
+            
+            <div class="product-card" onclick="openModal('Producto B', '$25.00')">
+                <div class="image-holder">
+                    <img src="https://images.pexels.com/photos/4207892/pexels-photo-4207892.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Set de Tazas">
+                </div>
+                <div class="product-info">
+                    <span class="product-name">Producto B</span>
+                    <span class="product-price">$25.00</span>
+                </div>
+                <span class="add-btn">View Detail</span>
+            </div>
+
+
+            <div class="product-card" onclick="openModal('Producto C', '$85.00')">
+                <div class="image-holder"><img src="https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800"></div>
+                <div class="product-info"><span class="product-name">Producto C</span><span class="product-price">$85.00</span></div>
+                <span class="add-btn">View Detail</span>
+            </div>
+            <div class="product-card" onclick="openModal('Producto D', '$60.00')">
+                <div class="image-holder"><img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800"></div>
+                <div class="product-info"><span class="product-name">Producto D</span><span class="product-price">$60.00</span></div>
+                <span class="add-btn">View Detail</span>
+            </div>
+        </div>
+    </main>
+
+    <section class="about-section" id="about-ui">
+        <div class="about-content">
+            <p class="about-label">Studio</p>
+            <h2 class="about-title">Vendemos objetos que cuentan historias. Creemos en el regalo como una pieza de arte, un puente entre quien da y quien recibe.</h2>
+            <div class="about-details">
+                <div class="detail-column">
+                    <span>01. Contenido</span>
+                    <p>Seleccionamos productos únicos .</p>
+                </div>
+                <div class="detail-column">
+                    <span>02. Propósito</span>
+                    <p>Elevamos el acto de regalar a una experiencia sensorial y estética.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="location-section">
+        <div class="location-grid">
+            <div class="location-info">
+                <p class="about-label">Visitanos</p>
+                <h3>Regalarte</h3>
+                <p class="address">Dr Lobo Castellanos 242<br>Berrotarán, Córdoba</p>
+                <p class="hours">LUN — VIE: 8:30 — 12:30 / 17:00 - 21:00<br>SAB: 9:00 - 12:30 / 17:00 - 21:00</p>
+            </div>
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3366.815266928224!2d-64.38978662500251!3d-32.45087914702028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95d2818f044db7b5%3A0xa79266f42c02db87!2sRegalarte!5e0!3m2!1ses!2sar!4v1767821316569!5m2!1ses!2sar" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer-ui" style="display: flex; justify-content: space-between; align-items: flex-end; padding: 40px 20px; border-top: 1px solid #333; margin-top: 50px;">
+    
+        <div class="footer-left" style="font-family: monospace; font-size: 10px; line-height: 1.5; opacity: 0.6;">
+            <div>&copy; 2026 RegalArte</div>
+            <div>TODOS LOS DERECHOS RESERVADOS.</div>
+            <div style="margin-top: 10px; letter-spacing: 2px;">|| ||| | ||| || | |||</div>
+        </div>
+
+        <div class="footer-right" style="text-align: right; font-family: 'Inter', sans-serif;">
+            <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; display: block; margin-bottom: 4px;">Desarrollado por</span>
+            <span style="font-weight: 800; font-size: 14px; letter-spacing: 1px; color: #fff;">ENVYRA<span style="color: #d4ff00;">_</span></span>
+        </div>
+
+    </footer>
+
+    <script>
+        const WHATSAPP_NUMBER = "543585188045"; // <--- CAMBIA ESTO POR TU NÚMERO
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const title = document.getElementById('animated-title');
+            const tagline = document.getElementById('animated-tagline');
+            const nav = document.getElementById('nav-ui');
+            const shop = document.getElementById('shop-ui');
+            const footer = document.getElementById('footer-ui');
+            
+            const strText = title.textContent;
+            const splitText = strText.split("");
+            title.textContent = "";
+
+            splitText.forEach((char) => {
+                title.innerHTML += `<span class="char">${char}</span>`;
+            });
+            title.innerHTML += `<span class="char dot">.</span>`;
+
+            const chars = document.querySelectorAll('.char');
+            
+            chars.forEach((char, i) => {
+                setTimeout(() => {
+                    char.classList.add('reveal');
+                }, i * 70);
+            });
+
+            setTimeout(() => {
+                tagline.classList.add('reveal');
+            }, (splitText.length * 70) + 300);
+
+            setTimeout(() => {
+                
+                nav.classList.add('reveal-ui');
+                shop.classList.add('reveal-ui');
+                footer.classList.add('reveal-ui');
+                document.body.style.overflowY = "auto";
+            }, (splitText.length * 70) + 1200);
+            
+            document.body.style.overflowY = "hidden";
+        });
+
+        // FUNCIONES DEL MODAL
+        function openModal(name, price) {
+            document.getElementById('modal-title').innerText = name;
+            const message = `Hola! Me interesa el objeto "${name}" que vi en RegalArte. ¿Me das más info?`;
+            document.getElementById('wa-link').href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = "hidden"; // Bloquea scroll al abrir
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = "auto";
+        }
+
+        // Cerrar al clickear fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) closeModal();
+        }
+    </script>
+</body>
+</html>

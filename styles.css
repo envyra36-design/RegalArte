@@ -1,0 +1,45 @@
+:root {
+  --primary-color: #a4ff2e; /* El verde lima de la imagen */
+  --bg-color: #1a1a1a;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif; /* Usar una fuente similar a la imagen */
+}
+
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Reemplaza con tu imagen. El filtro grayscale le da el look editorial */
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+              url('tu-imagen-femenina.jpg') no-repeat center center;
+  background-size: cover;
+  filter: grayscale(100%); 
+}
+
+.logo-text {
+  color: #ffffff;
+  font-size: 10rem; /* Tamaño grande e impactante */
+  font-weight: 500;
+  letter-spacing: -5px;
+  position: relative;
+  margin: 0;
+}
+
+.dot {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 25px;
+  right: -35px;
+  /* Filtro para que el punto mantenga su color real mientras el resto es B&N */
+  filter: brightness(1.2); 
+}
